@@ -1,0 +1,562 @@
+STRINGS: dict[str, str] = {
+    # ── Language selection ──
+    "choose_language": (
+        "🌌 Добро пожаловать в <b>Game Space \"Clock\"</b>!\n\n"
+        "Мы смотрим в космос, стоя на земле. ✨\n\n"
+        "Оберіть мову / Choose language:"
+    ),
+    "lang_set": "✅ Язык установлен: Русский 🇷🇺",
+
+    # ── Main menu ──
+    "main_menu_text": (
+        "⚙️ · · · XII · · · ⚙️\n"
+        "   XI ·         · I\n"
+        "  X ·  🕰 CLOCK  · II\n"
+        "IX · Game Space  · III\n"
+        "  VIII ·         · IV\n"
+        "   VII ·         · V\n"
+        "⚙️ · · ·  VI  · · ⚙️\n\n"
+        "Добро пожаловать! 🌿\n"
+        "Отдыхайте и играйте на полную!\n\n"
+        "📅 Пн–Вт, Чт–Вс: 13:00 – 23:00\n"
+        "🗓 Среда — выходной\n\n"
+        "⚡ Генератор · 💧 Вода · 🛡 Безопасность\n\n"
+        "Выберите раздел:"
+    ),
+    "btn_booking":      "📅 Забронировать",
+    "btn_birthday":     "🎂 День рождения",
+    "btn_suggestions":  "💡 Предложения",
+    "btn_gallery":      "📸 Фото",
+    "btn_games":        "🎮 Игры",
+    "btn_instructions": "📖 Настолки",
+    "btn_profile":      "👤 Мой профиль",
+    "btn_back":         "◀️ Назад",
+    "btn_main_menu":    "🏠 Главное меню",
+    "btn_cancel":       "❌ Отмена",
+    "btn_confirm":      "✅ Подтвердить",
+
+    # ── Booking ──
+    "booking_title": (
+        "📅 <b>Бронирование</b>\n\n"
+        "✨ <b>Почему стоит выбрать нас:</b>\n"
+        "🍕 Можно приходить со своей едой и напитками\n"
+        "🛡 Вы всегда в безопасности\n"
+        "🎵 Аутентичная музыка\n"
+        "🍵 Бесплатные чай, вода, зарядка, Wi-Fi\n"
+        "🎲 Всегда есть чем заняться\n\n"
+        "Выберите зону:"
+    ),
+    "booking_date":    "📆 Введите дату бронирования:\n<i>Пример: 15.03.2026</i>",
+    "booking_time": (
+        "⏰ Укажите время начала и окончания:\n"
+        "<i>Формат: 13:00 - 16:00\n"
+        "Часы работы: 13:00 — 23:00\n"
+        "13:00–18:00 → 100 грн/час · 18:00–23:00 → 150 грн/час</i>"
+    ),
+    "booking_people":  "👥 Сколько человек? Введите количество:",
+    "booking_name":    "👤 Введите ваше имя:",
+    "booking_phone":   "📱 Введите номер телефона:\n<i>Пример: +380501234567</i>",
+    "booking_payment": "💳 Выберите способ оплаты:",
+    "payment_iban":    "🏦 IBAN (онлайн-перевод)",
+    "payment_cash":    "💵 Наличными в заведении (в течение 3 дней)",
+    "booking_confirm": (
+        "📋 <b>Проверьте данные бронирования:</b>\n\n"
+        "🎯 Зона: <b>{zone}</b>\n"
+        "📆 Дата: <b>{date}</b>\n"
+        "⏰ Начало: <b>{time}</b>\n"
+        "💰 Тариф: <b>{price}</b>\n"
+        "👥 Людей: <b>{people}</b>\n"
+        "👤 Имя: <b>{name}</b>\n"
+        "📱 Телефон: <b>{phone}</b>\n"
+        "💳 Оплата: <b>{payment}</b>\n\n"
+        "Всё верно?"
+    ),
+    "booking_success": (
+        "✅ <b>Бронирование принято!</b> 🚀\n\n"
+        "Менеджер свяжется с вами в ближайшее время для подтверждения.\n"
+        "📞 Минимальное время — 30 мин."
+    ),
+    "booking_cancelled": "❌ Бронирование отменено.",
+
+    # ── Birthday ──
+    "birthday_success": (
+        "✅ <b>Заявка принята!</b> 🎉\n\n"
+        "🌌 Менеджер свяжется с вами в ближайшее время.\n"
+        "Ожидайте звонка или сообщения!"
+    ),
+    "birthday_cancelled": "❌ Заявка отменена.",
+
+    # Birthday flow steps
+    "bday_time_pick": (
+        "⏰ <b>Выбери время начала праздника</b>\n\n"
+        "☀️ <i>День</i> · 🌙 <i>Вечер</i>\n"
+        "Время работы: 13:00 — 23:00"
+    ),
+    "bday_time_pick_end": (
+        "⏰ <b>Выбери время завершения праздника</b>\n\n"
+        "Начало: <b>{start}</b> — выбери когда заканчиваем:"
+    ),
+    "bday_enter_name": (
+        "👤 <b>Как зовут именинника/цу?</b>\n\n"
+        "<i>Напишите имя:</i>"
+    ),
+    "bday_enter_age": (
+        "🎂 <b>Сколько исполняется лет?</b>\n\n"
+        "<i>Введите число:</i>"
+    ),
+    "bday_age_invalid": "⚠️ Введите число от 1 до 120.",
+    "bday_gender_pick_kid": (
+        "🎀 <b>Кто именинник?</b>\n\n"
+        "Выбери или пропусти:"
+    ),
+    "bday_gender_pick_adult": (
+        "✨ <b>Пол именинника/цы?</b>\n\n"
+        "Выбери или пропусти:"
+    ),
+    "bday_btn_boy":   "🧒 Мальчик",
+    "bday_btn_girl":  "👧 Девочка",
+    "bday_btn_man":   "👨 Мужчина",
+    "bday_btn_woman": "👩 Девушка",
+    "bday_btn_skip":  "⏭️ Пропустить",
+    "bday_enter_color": (
+        "🎨 <b>Какой любимый цвет?</b>\n\n"
+        "<i>Это поможет определиться с подарком!</i>"
+    ),
+    "bday_enter_phone": (
+        "📱 <b>Номер мобильного для связи:</b>\n\n"
+        "<i>Пример: +380501234567</i>"
+    ),
+    "bday_enter_wishes": (
+        "💬 <b>Пожелания и идеи для праздника:</b>\n\n"
+        "<i>Есть особые просьбы? Напишите или отправьте «-» если нет.</i>"
+    ),
+    "bday_payment_summary": (
+        "🎉 <b>Почти готово!</b>\n\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "📋 <b>Ваша заявка:</b>\n"
+        "📅 Дата: <b>{date}</b>\n"
+        "⏰ Время: <b>{time}</b>\n"
+        "👤 Имя: <b>{name}</b>\n"
+        "🎂 Возраст: <b>{age}</b>\n"
+        "⚥ Пол: <b>{gender}</b>\n"
+        "🎨 Цвет: <b>{color}</b>\n"
+        "📱 Телефон: <b>{phone}</b>\n"
+        "💬 Пожелания: <b>{wishes}</b>\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+        "💰 Предоплата для подтверждения: <b>{deposit} грн</b>\n\n"
+        "🎮 <b>Бонус именинника/цы:</b> VR-очки <b>бесплатно</b> 🎁\n\n"
+        "Выберите способ оплаты:"
+    ),
+    "bday_btn_iban": "🏦 Предоплата на IBAN",
+    "bday_btn_cash": "💵 Наличными в течение 3 дней",
+    "bday_success_iban": (
+        "✅ <b>Заявка принята!</b> 🚀\n\n"
+        "🏦 <b>Отправьте {deposit} грн на IBAN:</b>\n"
+        "<code>{iban}</code>\n\n"
+        "📌 В комментарии укажите: «<b>ДР {name} {date}</b>»\n\n"
+        "🌌 Менеджер подтвердит бронирование после получения оплаты!"
+    ),
+    "bday_success_iban_no_iban": (
+        "✅ <b>Заявка принята!</b> 🚀\n\n"
+        "🏦 Менеджер отправит реквизиты для предоплаты {deposit} грн.\n\n"
+        "🌌 Ожидайте сообщения!"
+    ),
+    "bday_success_cash": (
+        "✅ <b>Заявка принята!</b> 🎉\n\n"
+        "💵 Принесите <b>{deposit} грн наличными</b> в заведение "
+        "в течение <b>3 дней</b> для подтверждения.\n\n"
+        "🌌 Менеджер свяжется с вами в ближайшее время!"
+    ),
+
+    # ── Suggestions ──
+    "suggestions_title":   (
+        "💡 <b>Предложения и пожелания</b>\n\n"
+        "✨ Ваше мнение помогает нам становиться лучше!\n"
+        "Напишите своё сообщение:"
+    ),
+    "suggestions_success": "✅ Спасибо! Ваше предложение получено. 🚀",
+    "suggestions_cancel":  "❌ Отменено.",
+
+    # ── Gallery ──
+    "gallery_title": "📸 <b>Фото Game Space \"Clock\"</b>",
+    "gallery_empty": (
+        "📸 Фото пока что загружаются...\n\n"
+        "Заходите позже или подписывайтесь на наш канал!"
+    ),
+
+    # ── Games ──
+    "games_menu":      "🎮 <b>Игры</b>\n\n🕹 Выберите платформу:",
+    "btn_ps5_games":   "🎮 PlayStation 5",
+    "btn_ps4_games":   "🕹 PlayStation 4",
+    "ps5_games_title": "🎮 <b>Игры PlayStation 5</b>",
+    "ps4_games_title": "🕹 <b>Игры PlayStation 4</b>",
+    "games_empty":     "🎮 Список игр пополняется. Обратитесь к менеджеру для актуального списка.",
+
+    # ── Instructions ──
+    "instructions_title":    "📖 <b>Настольные игры</b>",
+    "instructions_empty":    "📖 Инструкции добавляются. Обратитесь к персоналу — мы всегда поможем! ✨",
+    "instructions_choose":   "Выбери игру чтобы посмотреть правила:",
+    "instruction_not_found": "⚠️ Инструкция не найдена.",
+
+    # ── Profile ──
+    "profile_title": (
+        "👤 <b>Мой профиль</b>\n\n"
+        "🆔 ID: <code>{tg_id}</code>\n"
+        "👤 Имя: <b>{name}</b>\n"
+        "📱 Телефон: <b>{phone}</b>\n\n"
+        "⭐ Баллов: <b>{points}</b>\n"
+        "💰 Кошелёк: <b>{wallet} грн</b>\n"
+        "🔗 Реф. код: <code>{ref_code}</code>"
+    ),
+    "profile_name_not_set":   "не указано",
+    "profile_phone_not_set":  "не указано",
+    "btn_edit_name":          "✏️ Имя: {name}",
+    "btn_edit_phone":         "📱 Телефон: {phone}",
+    "btn_points":             "⭐ {points} баллов",
+    "btn_wallet":             "💰 Кошелёк: {wallet} грн",
+    "btn_referrals":          "🔗 Мои рефералы",
+    "btn_change_lang":        "🌐 Сменить язык",
+    "profile_enter_name":     "👤 Введите новое имя:",
+    "profile_name_saved":     "✅ Имя сохранено!",
+    "profile_enter_phone":    "📱 Введите новый номер телефона:\n<i>Пример: +380501234567</i>",
+    "profile_phone_saved":    "✅ Телефон сохранён!",
+    "profile_phone_invalid":  "⚠️ Неверный формат. Введите номер:\n<i>Пример: +380501234567</i>",
+
+    # ── Points history ──
+    "points_history_title":  (
+        "⭐ <b>Мои баллы</b>\n\n"
+        "Текущий баланс: <b>{points} баллов</b>\n\n"
+        "История начислений:"
+    ),
+    "points_history_empty":  "⭐ Баллов пока нет. Бронируйте — начисляем 10% от суммы!",
+    "points_history_row":    "{date}  <b>+{amount} ⭐</b>  {description}",
+    "btn_points_history":    "📋 История баллов",
+
+    # ── Wallet ──
+    "wallet_title": (
+        "💰 <b>Кошелёк</b>\n\n"
+        "Баланс: <b>{wallet} грн</b>\n\n"
+        "Пополните кошелёк — получите <b>+{bonus}%</b> бонус!"
+    ),
+    "wallet_topup_btn":             "💳 Пополнить кошелёк",
+    "wallet_history_btn":           "📋 История пополнений",
+    "wallet_enter_name": (
+        "📝 <b>Введите ваше имя и фамилию</b>\n\n"
+        "Эти данные будут использованы как комментарий к банковскому переводу:"
+    ),
+    "wallet_name_invalid":          "⚠️ Введите имя и фамилию (минимум 2 символа):",
+    "wallet_enter_amount": (
+        "💳 <b>Пополнение кошелька</b>\n\n"
+        "Введите сумму пополнения (грн):\n"
+        "<i>Минимум 50 грн. Бонус +{bonus}% начисляется после подтверждения.</i>"
+    ),
+    "wallet_amount_invalid":        "⚠️ Введите целое число не менее 50:",
+    "wallet_topup_created": (
+        "✅ <b>Заявка на пополнение создана!</b>\n\n"
+        "💳 Отправьте <b>{amount} грн</b> на IBAN:\n"
+        "<code>{iban}</code>\n\n"
+        "📝 <b>Комментарий к платежу</b> (скопируйте одним кликом):\n"
+        "<code>{comment}</code>\n\n"
+        "⚠️ Заявка действительна <b>30 минут</b>. Если средства не поступят — отменится автоматически.\n\n"
+        "После подтверждения — <b>{total} грн</b> (с бонусом) будет зачислено."
+    ),
+    "wallet_topup_auto_cancelled": (
+        "⏰ <b>Заявка на пополнение отменена.</b>\n\n"
+        "30 минут прошло без подтверждения. Если вы уже сделали перевод — обратитесь к менеджеру."
+    ),
+    "wallet_topup_confirmed": (
+        "✅ <b>Пополнение подтверждено!</b>\n\n"
+        "💰 Зачислено: <b>{total} грн</b>\n"
+        "🎁 (включая бонус {bonus} грн)"
+    ),
+    "wallet_history_empty":         "💰 Пополнений пока нет.",
+    "wallet_history_row":           "{date}  <b>{amount} грн</b>  +{bonus} бонус  {status}",
+    "wallet_status_pending":        "⏳ ожидает",
+    "wallet_status_confirmed":      "✅ подтверждено",
+
+    # ── Referrals ──
+    "referrals_title": (
+        "🔗 <b>Мои рефералы</b>\n\n"
+        "Пригласи друга — получи <b>3%</b> от его трат за месяц!\n\n"
+        "Ваша реферальная ссылка:"
+    ),
+    "referrals_link":            "https://t.me/{bot_username}?start={ref_code}",
+    "referrals_empty":           "👥 У вас пока нет рефералов.",
+    "referrals_count":           "👥 Ваших рефералов: <b>{count}</b>",
+    "referrals_row":             "• {name} — с {date}",
+    "btn_enter_ref_code":        "🔗 Ввести реферальный код",
+    "enter_ref_code_prompt":     "🔗 Введите реферальный код друга:",
+    "ref_code_applied":          "✅ Реферальный код принят! Теперь вы связаны с вашим реферером.",
+    "ref_already_set":           "ℹ️ Вы уже были приглашены другим пользователем.",
+    "ref_code_not_found":        "❌ Такой код не найден. Проверьте правильность и попробуйте снова.",
+    "ref_code_own":              "❌ Нельзя ввести собственный реферальный код.",
+
+    # ── Use saved value in booking ──
+    "use_saved_name_prompt":     "👤 В профиле сохранено имя:\n<b>{name}</b>\n\nИспользовать?",
+    "use_saved_phone_prompt":    "📱 В профиле сохранён номер:\n<b>{phone}</b>\n\nИспользовать?",
+    "btn_use_saved_name":        "✅ Использовать: {name}",
+    "btn_use_saved_phone":       "✅ Использовать: {phone}",
+    "btn_enter_other_name":      "✏️ Другое имя",
+    "btn_enter_other_phone":     "✏️ Другой номер",
+
+    # ── Points awarded ──
+    "points_awarded":            "⭐ Начислено <b>{amount} баллов</b>!",
+
+    # ── Admin: wallet topups ──
+    "btn_wallet_topups":         "💰 Пополнения",
+    "admin_topups_title":        "💰 <b>Заявки на пополнение</b>\n\nВыберите для деталей:",
+    "no_pending_topups":         "💰 Новых заявок нет.",
+    "topup_detail": (
+        "💰 <b>Заявка #{id}</b>\n\n"
+        "👤 {name} (ID: <code>{tg_id}</code>)\n"
+        "💳 Сумма: <b>{amount} грн</b>\n"
+        "🎁 Бонус: +{bonus} грн\n"
+        "📊 Итого: <b>{total} грн</b>\n"
+        "📝 Комментарий: <code>{comment}</code>\n"
+        "📅 {date}"
+    ),
+    "btn_confirm_topup":         "✅ Подтвердить пополнение",
+    "btn_cancel_topup":          "❌ Отклонить",
+    "topup_confirmed_ok":        "✅ Пополнение подтверждено! {total} грн зачислено.",
+    "topup_cancelled_ok":        "✅ Заявка отклонена.",
+    "wallet_topup_rejected": (
+        "❌ <b>Ваша заявка на пополнение {amount} грн отклонена администратором.</b>\n\n"
+        "Если вы уже сделали перевод — обратитесь к менеджеру."
+    ),
+
+    # ── Admin: referral bonuses ──
+    "btn_ref_bonuses":           "🔗 Реф. баллы",
+    "admin_ref_confirm": (
+        "🔗 <b>Начислить реферальные баллы</b>\n\n"
+        "Месяц: <b>{month_name} {year}</b>\n\n"
+        "Система начислит реферерам 3% от трат их рефералов за этот месяц.\n\n"
+        "Продолжить?"
+    ),
+    "admin_ref_done": (
+        "✅ <b>Реферальные баллы начислены!</b>\n\n"
+        "Рефереров: <b>{referrers}</b>\n"
+        "Всего баллов: <b>{total_points}</b>"
+    ),
+    "btn_ref_bonuses_confirm":   "✅ Начислить",
+
+    # ── Admin ──
+    "not_admin":      "⛔ Нет доступа.",
+    "admin_panel":    "⚙️ <b>Админ-панель</b>\n\nВыберите действие:",
+    "btn_admin_panel":      "⚙️ Админ-панель",
+    "btn_add_game":         "➕ Игру",
+    "btn_add_photo":        "➕ Фото",
+    "btn_add_instruction":  "➕ Инструкцию",
+    "btn_bookings_list":    "📋 Бронирования",
+    "btn_birthday_list":    "🎂 Заявки ДР",
+    "btn_stats":            "📊 Статистика",
+    "btn_add_booking":      "➕ Бронирование",
+    "btn_users":            "👥 Пользователи",
+    "btn_broadcast":        "📢 Рассылка",
+    "btn_confirm_booking":  "✅ Подтвердить",
+    "btn_cancel_booking":   "❌ Отменить",
+    "btn_delete_entry":     "🗑 Удалить запись",
+    "entry_deleted_ok":     "🗑 Запись удалена.",
+    "btn_block_user":       "🚫 Заблокировать",
+    "btn_unblock_user":     "✅ Разблокировать",
+    "btn_broadcast_send":   "📤 Разослать всем",
+    "admin_game_platform":  "Выберите платформу:",
+    "admin_game_title":     "Введите название игры:",
+    "admin_game_image":     "Отправьте фото обложки (или /skip чтобы пропустить):",
+    "admin_game_added":     "✅ Игра добавлена!",
+    "admin_photo_send":     "Отправьте фото для галереи:",
+    "admin_photo_caption":  "Введите подпись к фото (или /skip):",
+    "admin_photo_added":    "✅ Фото добавлено в галерею!",
+    "admin_instr_name":     "Введите название игры для инструкции:",
+    "admin_instr_content":  "Отправьте текст или файл инструкции:",
+    "admin_instr_added":    "✅ Инструкция добавлена!",
+    "no_bookings":          "Бронирований нет.",
+    "no_birthday_orders":   "Заявок на ДР нет.",
+    "no_users":             "Пользователей нет.",
+    "not_found":            "❌ Не найдено.",
+    "admin_bookings_title": "📋 <b>Бронирования</b>\n\nВыберите для деталей:",
+    "admin_birthdays_title":"🎂 <b>Заявки — Дни рождения</b>\n\nВыберите для деталей:",
+    "admin_users_title":    "👥 <b>Пользователи</b>\n\n• Всего: <b>{total}</b>  • Заблокировано: <b>{blocked}</b>\n\nВыберите для деталей:",
+    "booking_confirmed_ok":     "✅ Бронирование подтверждено!",
+    "booking_cancelled_ok":     "❌ Бронирование отменено!",
+    "booking_confirmed_notify": "✅ <b>Ваше бронирование #{id} подтверждено!</b>\n\nЖдём вас! 🚀",
+    "booking_cancelled_notify": "❌ <b>Ваше бронирование #{id} отменено.</b>\n\nВопросы? @Clock_Anticafe",
+    "birthday_confirmed_notify":"✅ <b>Ваша заявка ДР #{id} подтверждена!</b>\n\nЖдём праздника! 🎉",
+    "birthday_cancelled_notify":"❌ <b>Ваша заявка ДР #{id} отменена.</b>\n\nВопросы? @Clock_Anticafe",
+    "user_blocked_ok":      "🚫 Пользователь заблокирован.",
+    "user_unblocked_ok":    "✅ Пользователь разблокирован.",
+    "you_are_blocked":      "🚫 <b>Ваш аккаунт временно заблокирован.</b>\n\nВопросы? @Clock_Anticafe",
+    "admin_add_booking_zone":   "📋 <b>Новое бронирование (админ)</b>\n\nВыберите зону:",
+    "admin_add_booking_notes":  "📝 Комментарий к бронированию (или /skip):",
+    "admin_add_booking_done":   "✅ <b>Бронирование #{id} создано и подтверждено!</b>",
+    "admin_broadcast_enter":    (
+        "📢 <b>Рассылка</b>\n\n"
+        "Введите текст сообщения.\n"
+        "Поддерживается HTML-форматирование (<b>жирный</b>, <i>курсив</i>):"
+    ),
+    "admin_broadcast_empty":    "⚠️ Пустое сообщение. Введите текст:",
+    "admin_broadcast_preview":  (
+        "📢 <b>Предпросмотр рассылки</b>\n\n"
+        "Получателей: <b>{count}</b>\n\n"
+        "━━━━━━━━━━━━\n"
+        "{text}\n"
+        "━━━━━━━━━━━━\n\n"
+        "Разослать?"
+    ),
+    "admin_broadcast_sending":  "⏳ Рассылаем {count} пользователям...",
+    "admin_broadcast_done":     "✅ <b>Рассылка завершена!</b>\n\n📤 Отправлено: <b>{sent}</b>\n❌ Ошибок: <b>{failed}</b>",
+
+    # ── Misc ──
+    "invalid_people": "⚠️ Введите целое число (например: 3)",
+    "cancelled":      "❌ Действие отменено.",
+    "booking_birthday_conflict": (
+        "🎂 <b>Это время занято Днём Рождения</b>\n\n"
+        "В выбранный промежуток у нас проходит частный праздник.\n"
+        "Пожалуйста, выбери другое время или обратись к администратору: @Clock_Anticafe"
+    ),
+
+    # ── Bunker Game ──
+    "btn_bunker": "🎲 Бункер",
+
+    "bunker_menu_title": (
+        "🎲 <b>Бункер</b>\n\n"
+        "Постапокалиптическая игра на выживание.\n"
+        "Ведущий управляет игрой, игроки получают тайные карточки и борются за место в бункере.\n\n"
+        "<i>От 4 до 12 игроков.</i>"
+    ),
+    "bunker_btn_create":         "🚀 Создать игру",
+    "bunker_btn_join":           "🔑 Присоединиться",
+    "bunker_btn_start_game":     "▶️ Начать игру",
+    "bunker_btn_cancel_session": "❌ Отменить сессию",
+    "bunker_btn_vote":           "🗳 Голосование",
+    "bunker_btn_end_game":       "🏁 Завершить игру",
+    "bunker_btn_show_attr":      "👁 Раскрыть свой атрибут",
+    "bunker_btn_skip_kick":      "⏭ Никого не исключать",
+
+    "bunker_select_count": (
+        "🎲 <b>Создание игры «Бункер»</b>\n\n"
+        "Сколько игроков будет играть?\n"
+        "<i>(Ты — ведущий, не считаешься)</i>"
+    ),
+    "bunker_session_created": (
+        "✅ <b>Сессия создана!</b>\n\n"
+        "📋 Код игры: <code>{code}</code>\n"
+        "👥 Ожидаем игроков: {joined}/{max}\n\n"
+        "Сообщи игрокам код — они вводят его в боте.\n"
+        "Когда все войдут — нажми <b>▶️ Начать игру</b>."
+    ),
+    "bunker_waiting_update": (
+        "⏳ <b>Ожидание игроков</b>\n\n"
+        "📋 Код: <code>{code}</code>\n"
+        "👥 Подключились: {joined}/{max}\n\n"
+        "{player_list}"
+    ),
+    "bunker_enter_code": (
+        "🔑 <b>Присоединиться к игре</b>\n\n"
+        "Введи 6-значный код, который сообщил ведущий:"
+    ),
+    "bunker_code_not_found": "❌ Сессия с таким кодом не найдена или уже завершена.",
+    "bunker_session_full":   "⚠️ Сессия уже заполнена.",
+    "bunker_already_joined": "ℹ️ Ты уже в этой сессии.",
+    "bunker_joined": (
+        "✅ <b>Ты в бункере!</b>\n\n"
+        "📋 Код: <code>{code}</code>\n"
+        "⏳ Жди, пока ведущий начнёт игру…"
+    ),
+    "bunker_already_host": "⚠️ Ты уже являешься ведущим активной сессии.",
+
+    "bunker_game_started_host": (
+        "🌋 <b>ИГРА НАЧАЛАСЬ!</b>\n\n"
+        "━━━━━━━━━━━━━━━━━━━━\n"
+        "☢️ <b>КАТАСТРОФА:</b>\n{catastrophe}\n\n"
+        "🏠 <b>БУНКЕР:</b>\n{bunker}\n\n"
+        "👥 Мест в бункере: <b>{capacity}</b> из {total}\n"
+        "━━━━━━━━━━━━━━━━━━━━\n\n"
+        "🃏 <b>Карточки игроков:</b>\n{cards_summary}\n\n"
+        "<i>Выбери атрибут для объявления раунда или начинай голосование.</i>"
+    ),
+    "bunker_game_started_player": (
+        "🌋 <b>ИГРА НАЧАЛАСЬ!</b>\n\n"
+        "☢️ <b>Катастрофа:</b> {catastrophe}\n\n"
+        "🏠 Есть бункер на <b>{capacity}</b> человек из {total}.\n"
+        "Выживут только лучшие!\n\n"
+        "🃏 <b>Твоя тайная карточка:</b>\n{card}"
+    ),
+    "bunker_card_line":          "  {attr}: <b>{value}</b>",
+
+    "bunker_reveal_round_host": (
+        "📢 <b>Раунд раскрытия: {attr_name}</b>\n\n"
+        "Игроки получили запрос раскрыть свой атрибут.\n"
+        "Когда все объявят — слушай!\n\n"
+        "Статус:\n{status}"
+    ),
+    "bunker_reveal_prompt_player": (
+        "📢 <b>Ведущий объявляет раунд!</b>\n\n"
+        "Раскрой свой атрибут: <b>{attr_name}</b>\n\n"
+        "Нажми кнопку, чтобы увидеть значение — потом объяви вслух."
+    ),
+    "bunker_attr_shown": (
+        "👁 Твой атрибут «{attr_name}»:\n\n"
+        "🎴 <b>{value}</b>\n\n"
+        "<i>Объяви это вслух остальным игрокам!</i>"
+    ),
+    "bunker_already_revealed": "ℹ️ Ты уже раскрывал этот атрибут.",
+    "bunker_reveal_status_done":    "✅ {name}",
+    "bunker_reveal_status_waiting": "⏳ {name}",
+
+    "bunker_vote_open_host": (
+        "🗳 <b>ГОЛОСОВАНИЕ #{round}</b>\n\n"
+        "Игроки голосуют анонимно.\n"
+        "Жди пока все проголосуют…\n\n"
+        "Не проголосовали: {pending}"
+    ),
+    "bunker_vote_prompt_player": (
+        "🗳 <b>ГОЛОСОВАНИЕ!</b>\n\n"
+        "Кого исключить из бункера?\n"
+        "<i>Голос анонимный — ведущий увидит результаты после всех.</i>"
+    ),
+    "bunker_vote_cast":     "✅ Голос принят. Жди результатов.",
+    "bunker_already_voted": "ℹ️ Ты уже проголосовал в этом раунде.",
+    "bunker_vote_results_host": (
+        "📊 <b>Результаты голосования #{round}:</b>\n\n"
+        "{results}\n\n"
+        "Кого исключаем?"
+    ),
+    "bunker_vote_result_line": "<b>{name}</b> — {votes} голос.: {voters}",
+
+    "bunker_eliminated_player": (
+        "💀 <b>Тебя исключили из бункера.</b>\n\n"
+        "Ты остаёшься снаружи…\n"
+        "Наблюдай за игрой — может, победители передумают? 👀"
+    ),
+    "bunker_eliminated_broadcast": "💀 <b>{name}</b> покидает бункер!",
+    "bunker_skip_kick_host": "⏭ Раунд голосования пропущен. Никто не исключён.",
+
+    "bunker_game_over_host": (
+        "🏆 <b>ИГРА ЗАВЕРШЕНА!</b>\n\n"
+        "🎉 Выжившие:\n{survivors}\n\n"
+        "💀 Остались снаружи:\n{eliminated}\n\n"
+        "<i>Спасибо за игру в Game Space Clock! 🚀</i>"
+    ),
+    "bunker_game_over_survivor": (
+        "🏆 <b>ТЫ ВЫЖИЛ!</b>\n\n"
+        "Поздравляем — твоё место в бункере обеспечено! 🎉\n\n"
+        "Выжившие: {survivors}"
+    ),
+    "bunker_game_over_eliminated": (
+        "💀 <b>Игра завершена.</b>\n\n"
+        "Выжившие: {survivors}\n\n"
+        "<i>В следующий раз повезёт! 🌌</i>"
+    ),
+    "bunker_session_cancelled": "❌ Сессия отменена ведущим.",
+    "bunker_no_active_session":  "ℹ️ У тебя нет активной сессии.",
+    "bunker_not_in_session":     "ℹ️ Ты не являешься участником этой игры.",
+    "bunker_session_not_active": "ℹ️ Игра ещё не начата или уже завершена.",
+
+    # Attribute display names
+    "bunker_attr_profession": "💼 Профессия",
+    "bunker_attr_health":     "❤️ Здоровье",
+    "bunker_attr_hobby":      "🎯 Хобби",
+    "bunker_attr_phobia":     "😨 Фобия",
+    "bunker_attr_baggage":    "🎒 Багаж",
+    "bunker_attr_ability":    "⚡ Способность",
+}
