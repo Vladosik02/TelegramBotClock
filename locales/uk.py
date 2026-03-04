@@ -429,7 +429,9 @@ STRINGS: dict[str, str] = {
     "bunker_btn_cancel_session": "❌ Скасувати сесію",
     "bunker_btn_vote":           "🗳 Голосування",
     "bunker_btn_end_game":       "🏁 Завершити гру",
-    "bunker_btn_show_attr":      "👁 Розкрити свій атрибут",
+    "bunker_btn_reveal_round":   "▶ Розпочати раунд розкриття",
+    "bunker_btn_confirm_reveal": "✅ Оголошую вголос",
+    "bunker_btn_back_to_card":   "← Змінити вибір",
     "bunker_btn_skip_kick":      "⏭ Нікого не виключати",
 
     "bunker_select_count": (
@@ -472,7 +474,7 @@ STRINGS: dict[str, str] = {
         "👥 Місць у бункері: <b>{capacity}</b> з {total}\n"
         "━━━━━━━━━━━━━━━━━━━━\n\n"
         "🃏 <b>Карточки гравців:</b>\n{cards_summary}\n\n"
-        "<i>Вибери атрибут для оголошення раунду або починай голосування.</i>"
+        "<i>Натисни «▶ Розпочати розкриття» — гравці самі оберуть, що показати.</i>"
     ),
     "bunker_game_started_player": (
         "🌋 <b>ГРА РОЗПОЧАТА!</b>\n\n"
@@ -483,22 +485,27 @@ STRINGS: dict[str, str] = {
     ),
     "bunker_card_line":          "  {attr}: <b>{value}</b>",
 
-    "bunker_reveal_round_host": (
-        "📢 <b>Раунд розкриття: {attr_name}</b>\n\n"
-        "Гравці отримали запит розкрити свій атрибут.\n"
-        "Коли всі оголосять — слухай!\n\n"
-        "Статус:\n{status}"
+    "bunker_round_open_host": (
+        "📋 <b>Раунд розкриття #{round_num}</b>\n\n"
+        "Гравці обирають, що розкрити. Очікуй поки всі оголосять!\n\n"
+        "{status}"
     ),
-    "bunker_reveal_prompt_player": (
-        "📢 <b>Ведучий оголошує раунд!</b>\n\n"
-        "Розкрий свій атрибут: <b>{attr_name}</b>\n\n"
-        "Натисни кнопку, щоб побачити значення — потім оголоси вголос."
+    "bunker_round_status_host": (
+        "📋 <b>Раунд розкриття #{round_num} — оновлення</b>\n\n"
+        "{status}"
     ),
-    "bunker_attr_shown": (
-        "👁 Твій атрибут «{attr_name}»:\n\n"
-        "🎴 <b>{value}</b>\n\n"
-        "<i>Оголоси це вголос решті гравців!</i>"
+    "bunker_pick_attr_prompt": (
+        "🃏 <b>Раунд #{round_num} — обери атрибут</b>\n\n"
+        "Натисни на той атрибут, який хочеш оголосити сьогодні.\n"
+        "<i>✅ = вже розкрито  •  🔓 = можна розкрити</i>"
     ),
+    "bunker_confirm_attr_prompt": (
+        "👁 <b>Ти обрав: {attr_name}</b>\n\n"
+        "Твоє значення: 🎴 <b>{value}</b>\n\n"
+        "<i>Запам'ятай і оголоси вголос решті гравців!\n"
+        "Після підтвердження атрибут буде зафіксовано.</i>"
+    ),
+    "bunker_first_round_profession": "⚠️ У першому раунді всі зобов'язані розкрити Профессію!",
     "bunker_already_revealed": "ℹ️ Ти вже розкривав цей атрибут.",
     "bunker_reveal_status_done":    "✅ {name}",
     "bunker_reveal_status_waiting": "⏳ {name}",
@@ -620,4 +627,85 @@ STRINGS: dict[str, str] = {
         "це найцікавіший момент: коли виявляється що «лікар» насправді був безробітним блогером 😅"
         "</blockquote>"
     ),
+
+    # ── Phase 5: Event Cards (Section 15) ────────────────────────────────────
+    "bunker_btn_draw_event":      "🎲 Витягнути подію",
+    "bunker_btn_roll_dice":       "🎲 Кинути кубик",
+
+    "bunker_no_event":            "🎲 Цього разу тихо. Подія не відбулася.",
+    "bunker_event_final_round":   "🏁 У фінальному раунді події заборонені.",
+    "bunker_event_already_active": "⚠️ Є незавершена подія! Спершу вирішіть її.",
+    "bunker_event_already_resolved": "ℹ️ Ця подія вже завершена.",
+
+    "bunker_event_drawn_host": (
+        "🎲 <b>ПОДІЯ: {event_name}</b>\n\n"
+        "<blockquote>{event_text}</blockquote>\n\n"
+        "⚙️ DC: <b>{dc}</b>\n"
+        "👤 Виконавець: <b>{executor_name}</b>\n"
+        "🎯 Модифікатор: <b>{modifier}</b>\n\n"
+        "{special}"
+        "<i>Зачитай картку вголос. Виконавець отримав кнопку «Кинути кубик».</i>"
+    ),
+    "bunker_event_broadcast": (
+        "⚠️ <b>ПОДІЯ: {event_name}</b>\n\n"
+        "{event_text}"
+    ),
+    "bunker_event_executor_prompt": (
+        "🎯 <b>Ти призначений виконавцем!</b>\n\n"
+        "Подія: <b>{event_name}</b>\n"
+        "DC: <b>{dc}</b> | Твій бонус: <b>+{modifier}</b>\n\n"
+        "Натисни кнопку коли будеш готовий кинути кубик."
+    ),
+    "bunker_event_no_executor": "⚠️ <b>Нема підходящого виконавця — Автопровал!</b>\n\n",
+    "bunker_event_auto_result": (
+        "{outcome_emoji} <b>{event_name}</b>\n\n"
+        "{consequence}"
+    ),
+    "bunker_event_roll_result": (
+        "🎲 <b>{executor_name} кидає кубик!</b>\n\n"
+        "Кидок: <b>{roll}</b>\n"
+        "Модифікатор: <b>+{modifier}</b>\n"
+        "Разом: <b>{total}</b> vs DC <b>{dc}</b>\n\n"
+        "{outcome_emoji} {consequence}"
+    ),
+
+    # Theft event
+    "bunker_theft_host_note":     "🎭 <b>Злодія призначено таємно. Слідчий вже в курсі.</b>\n\n",
+    "bunker_event_thief_assigned": (
+        "🎭 <b>Ти — таємний злодій!</b>\n\n"
+        "Обери гравця, у якого хочеш вкрасти вже розкритий атрибут.\n"
+        "<i>Тільки ти бачиш це повідомлення.</i>"
+    ),
+    "bunker_event_detective_assigned": (
+        "🔍 <b>Ти — слідчий!</b>\n\n"
+        "Злодій діє прямо зараз. Коли він завершить — ти отримаєш кнопку для кидка.\n"
+        "DC: <b>{dc}</b> | Твій бонус: <b>+{modifier}</b>"
+    ),
+    "bunker_event_thief_pick_attr": (
+        "🎭 <b>Жертва: {victim_name}</b>\n\n"
+        "Який розкритий атрибут вкрадеш?"
+    ),
+    "bunker_event_theft_done_thief": (
+        "✅ <b>Крадіжку здійснено!</b>\n\n"
+        "Жертва: {victim_name}\n"
+        "Атрибут: {attr_name}\n\n"
+        "<i>Очікуй дій слідчого…</i>"
+    ),
+    "bunker_detective_roll_prompt": (
+        "🔍 <b>Злодій діяв! Час розслідування.</b>\n\n"
+        "DC: <b>{dc}</b> | Твій бонус: <b>+{modifier}</b>\n\n"
+        "Натисни кнопку щоб кинути кубик."
+    ),
+    "bunker_theft_victim_no_attrs":  "ℹ️ У цього гравця ще немає розкритих атрибутів.",
+    "bunker_theft_already_stolen":   "ℹ️ Крадіжку вже здійснено.",
+    "bunker_theft_wait_thief":       "⏳ Очікуй поки злодій зробить крадіжку.",
+
+    # Status notifications
+    "bunker_event_victim_status": (
+        "⚠️ <b>Подія: {event_name}</b>\n\n"
+        "Ти отримуєш статус {status}\n"
+        "<i>Тільки ти знаєш про це. Результат залежить від виконавця.</i>"
+    ),
+    "bunker_status_infected":     "🤒 Ти заразився! Статус: 🤒 Хворий.",
+    "bunker_game_auto_end_hint":  "🏁 <b>Підказка:</b> Живих гравців = місць у бункері. Можна завершувати гру кнопкою «🏁 Завершити гру».",
 }

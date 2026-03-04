@@ -996,8 +996,9 @@ def bunker_menu_keyboard(lang: str) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.button(text=t("bunker_btn_create", lang), callback_data="bunker:create")
     builder.button(text=t("bunker_btn_join",   lang), callback_data="bunker:join")
+    builder.button(text=t("bunker_btn_rules",  lang), callback_data="bunker:rules")
     builder.button(text=t("btn_main_menu",     lang), callback_data="menu:main")
-    builder.adjust(2, 1)
+    builder.adjust(2, 1, 1)
     return builder.as_markup()
 
 
@@ -1025,23 +1026,84 @@ def bunker_host_waiting_keyboard(session_id: int, joined: int, needed: int, lang
 
 def bunker_host_game_keyboard(session_id: int, lang: str) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    for attr in _BUNKER_ATTR_ORDER:
-        builder.button(
-            text=t(f"bunker_attr_{attr}", lang),
-            callback_data=f"bunker:reveal:{attr}:{session_id}",
-        )
-    builder.button(text=t("bunker_btn_vote",     lang), callback_data=f"bunker:vote_start:{session_id}")
-    builder.button(text=t("bunker_btn_end_game", lang), callback_data=f"bunker:end:{session_id}")
-    builder.adjust(2, 2, 2, 2)
+    builder.button(text=t("bunker_btn_reveal_round", lang), callback_data=f"bunker:round_open:{session_id}")
+    builder.button(text=t("bunker_btn_draw_event",   lang), callback_data=f"bunker:draw_event:{session_id}")
+    builder.button(text=t("bunker_btn_vote",         lang), callback_data=f"bunker:vote_start:{session_id}")
+    builder.button(text=t("bunker_btn_end_game",     lang), callback_data=f"bunker:end:{session_id}")
+    builder.adjust(1, 1, 1, 1)
     return builder.as_markup()
 
 
-def bunker_player_reveal_keyboard(session_id: int, attr: str, lang: str) -> InlineKeyboardMarkup:
+def bunker_event_roll_keyboard(session_id: int, event_id: int, lang: str) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.button(
-        text=t("bunker_btn_show_attr", lang),
-        callback_data=f"bunker:show_attr:{attr}:{session_id}",
+        text=t("bunker_btn_roll_dice", lang),
+        callback_data=f"bunker:roll_dice:{session_id}:{event_id}",
     )
+    return builder.as_markup()
+
+
+def bunker_steal_victim_keyboard(
+    session_id: int, event_id: int, alive_players: list[dict], lang: str
+) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    for p in alive_players:
+        builder.button(
+            text=p["display_name"],
+            callback_data=f"bunker:steal_victim:{session_id}:{event_id}:{p['tg_id']}",
+        )
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def bunker_steal_attr_keyboard(
+    session_id: int, event_id: int, victim_tg_id: int, revealed: list[str], lang: str
+) -> InlineKeyboardMarkup:
+    _LABELS = {"profession": "💼", "health": "❤️", "hobby": "🎯",
+               "phobia": "😨", "baggage": "🎒", "ability": "⚡"}
+    builder = InlineKeyboardBuilder()
+    for attr in _BUNKER_ATTR_ORDER:
+        if attr in revealed:
+            label = f"{_LABELS.get(attr, '')} {t(f'bunker_attr_{attr}', lang).split()[-1]}"
+            builder.button(
+                text=label,
+                callback_data=f"bunker:steal_attr:{session_id}:{event_id}:{victim_tg_id}:{attr}",
+            )
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def bunker_player_card_keyboard(session_id: int, card: dict, revealed: list, lang: str) -> InlineKeyboardMarkup:
+    """Player's interactive card: unrevealed attrs are tappable, revealed shown with value (inactive)."""
+    rows = []
+    for attr in _BUNKER_ATTR_ORDER:
+        label = t(f"bunker_attr_{attr}", lang)
+        if attr in revealed:
+            value = card.get(attr, "—")
+            rows.append([InlineKeyboardButton(
+                text=f"✅ {label}: {value}",
+                callback_data="noop",
+            )])
+        else:
+            rows.append([InlineKeyboardButton(
+                text=f"🔓 {label}",
+                callback_data=f"bunker:pick_attr:{session_id}:{attr}",
+            )])
+    return InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+def bunker_player_confirm_keyboard(session_id: int, attr: str, lang: str) -> InlineKeyboardMarkup:
+    """Confirm reveal (announce aloud) or go back to choose a different attr."""
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text=t("bunker_btn_confirm_reveal", lang),
+        callback_data=f"bunker:confirm_attr:{session_id}:{attr}",
+    )
+    builder.button(
+        text=t("bunker_btn_back_to_card", lang),
+        callback_data=f"bunker:back_to_card:{session_id}",
+    )
+    builder.adjust(1, 1)
     return builder.as_markup()
 
 

@@ -169,6 +169,32 @@ async def init_db() -> None:
             capacity_min INTEGER DEFAULT 2,
             capacity_max INTEGER DEFAULT 5
         );
+
+        CREATE TABLE IF NOT EXISTS bunker_active_events (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id      INTEGER NOT NULL,
+            event_code      TEXT NOT NULL,
+            dc              INTEGER NOT NULL,
+            executor_tg_id  INTEGER DEFAULT 0,
+            modifier        INTEGER DEFAULT 0,
+            is_auto         INTEGER DEFAULT 0,
+            victim_tg_id    INTEGER DEFAULT 0,
+            thief_tg_id     INTEGER DEFAULT 0,
+            stolen_attr     TEXT DEFAULT '',
+            roll_result     INTEGER DEFAULT 0,
+            outcome         TEXT DEFAULT '',
+            round_num       INTEGER DEFAULT 0,
+            is_resolved     INTEGER DEFAULT 0,
+            created_at      TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS bunker_player_statuses (
+            session_id    INTEGER NOT NULL,
+            tg_id         INTEGER NOT NULL,
+            status        TEXT NOT NULL,
+            expires_round INTEGER DEFAULT 0,
+            PRIMARY KEY (session_id, tg_id)
+        );
     """)
     await db.commit()
 
@@ -194,6 +220,9 @@ async def init_db() -> None:
         "ALTER TABLE birthday_orders ADD COLUMN price INTEGER DEFAULT 0",
         # Wallet comment for payment reference
         "ALTER TABLE wallet_transactions ADD COLUMN comment TEXT DEFAULT ''",
+        # Phase 5 — Bunker events
+        "ALTER TABLE bunker_sessions ADD COLUMN last_event_code TEXT DEFAULT ''",
+        "ALTER TABLE bunker_sessions ADD COLUMN last_event_round INTEGER DEFAULT 0",
     ]:
         try:
             await db.execute(sql)
@@ -1147,11 +1176,20 @@ async def start_bunker_game(session_id: int) -> dict:
         pools[attr_type] = pool
 
     players = await get_bunker_players(session_id)
+    n_players = len(players)
+    # Ensure each pool has enough items (extend by repeating if seed content is sparse)
+    for attr_type in _BUNKER_ATTR_TYPES:
+        pool = pools[attr_type]
+        if pool and len(pool) < n_players:
+            pool = (pool * (n_players // len(pool) + 1))[:n_players]
+            _random.shuffle(pool)
+            pools[attr_type] = pool
+
     for i, player in enumerate(players):
         card = {}
         for attr_type in _BUNKER_ATTR_TYPES:
             pool = pools[attr_type]
-            card[attr_type] = pool[i % len(pool)] if pool else "—"
+            card[attr_type] = pool[i] if pool else "—"
         await db.execute(
             "UPDATE bunker_players SET card_json=?, revealed='[]' WHERE session_id=? AND tg_id=?",
             (_json.dumps(card, ensure_ascii=False), session_id, player["tg_id"]),
@@ -1223,3 +1261,122 @@ async def get_pending_vote_players(session_id: int, vote_round: int) -> list[int
 
 async def eliminate_bunker_player(session_id: int, tg_id: int) -> None:
     await update_bunker_player(session_id, tg_id, is_alive=0)
+
+
+# ─── Bunker Events (Phase 5) ─────────────────────────────────────────────────
+
+async def create_bunker_event(
+    session_id: int,
+    event_code: str,
+    dc: int,
+    executor_tg_id: int = 0,
+    modifier: int = 0,
+    is_auto: int = 0,
+    victim_tg_id: int = 0,
+    thief_tg_id: int = 0,
+    round_num: int = 0,
+) -> dict:
+    """Create a new active event record. Returns the created event dict."""
+    db = await get_db()
+    cur = await db.execute(
+        """INSERT INTO bunker_active_events
+           (session_id, event_code, dc, executor_tg_id, modifier, is_auto,
+            victim_tg_id, thief_tg_id, round_num)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        (session_id, event_code, dc, executor_tg_id, modifier, is_auto,
+         victim_tg_id, thief_tg_id, round_num),
+    )
+    await db.commit()
+    row = await (await db.execute(
+        "SELECT * FROM bunker_active_events WHERE id=?", (cur.lastrowid,)
+    )).fetchone()
+    return dict(row)
+
+
+async def get_active_bunker_event(session_id: int) -> dict | None:
+    """Return the latest unresolved event for the session."""
+    db = await get_db()
+    row = await (await db.execute(
+        "SELECT * FROM bunker_active_events WHERE session_id=? AND is_resolved=0 ORDER BY id DESC LIMIT 1",
+        (session_id,),
+    )).fetchone()
+    return dict(row) if row else None
+
+
+async def get_bunker_event(event_id: int) -> dict | None:
+    db = await get_db()
+    row = await (await db.execute(
+        "SELECT * FROM bunker_active_events WHERE id=?", (event_id,)
+    )).fetchone()
+    return dict(row) if row else None
+
+
+async def update_bunker_event(event_id: int, **kwargs) -> None:
+    db = await get_db()
+    if not kwargs:
+        return
+    sets = ", ".join(f"{k}=?" for k in kwargs)
+    vals = list(kwargs.values()) + [event_id]
+    await db.execute(f"UPDATE bunker_active_events SET {sets} WHERE id=?", vals)
+    await db.commit()
+
+
+async def resolve_bunker_event(
+    event_id: int,
+    roll_result: int = 0,
+    outcome: str = "",
+) -> None:
+    await update_bunker_event(event_id, roll_result=roll_result, outcome=outcome, is_resolved=1)
+
+
+async def get_recent_event_codes(session_id: int, limit: int = 2) -> list[str]:
+    """Return codes of the last N resolved events (for cooldown logic)."""
+    db = await get_db()
+    rows = await (await db.execute(
+        "SELECT event_code FROM bunker_active_events WHERE session_id=? AND is_resolved=1 ORDER BY id DESC LIMIT ?",
+        (session_id, limit),
+    )).fetchall()
+    return [r[0] for r in rows]
+
+
+# ─── Player statuses ──────────────────────────────────────────────────────────
+
+async def set_player_status(
+    session_id: int, tg_id: int, status: str, expires_round: int = 0
+) -> None:
+    db = await get_db()
+    await db.execute(
+        """INSERT INTO bunker_player_statuses (session_id, tg_id, status, expires_round)
+           VALUES (?, ?, ?, ?)
+           ON CONFLICT(session_id, tg_id) DO UPDATE SET status=excluded.status, expires_round=excluded.expires_round""",
+        (session_id, tg_id, status, expires_round),
+    )
+    await db.commit()
+
+
+async def clear_player_status(session_id: int, tg_id: int) -> None:
+    db = await get_db()
+    await db.execute(
+        "DELETE FROM bunker_player_statuses WHERE session_id=? AND tg_id=?",
+        (session_id, tg_id),
+    )
+    await db.commit()
+
+
+async def get_player_status(session_id: int, tg_id: int) -> str | None:
+    db = await get_db()
+    row = await (await db.execute(
+        "SELECT status FROM bunker_player_statuses WHERE session_id=? AND tg_id=?",
+        (session_id, tg_id),
+    )).fetchone()
+    return row[0] if row else None
+
+
+async def get_all_player_statuses(session_id: int) -> dict[int, str]:
+    """Return {tg_id: status} for all players with active statuses."""
+    db = await get_db()
+    rows = await (await db.execute(
+        "SELECT tg_id, status FROM bunker_player_statuses WHERE session_id=?",
+        (session_id,),
+    )).fetchall()
+    return {r[0]: r[1] for r in rows}
