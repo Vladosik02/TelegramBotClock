@@ -42,6 +42,7 @@ from database.db import (
     update_bunker_event,
     resolve_bunker_event,
     get_recent_event_codes,
+    get_bunker_event_history,
     set_player_status,
     clear_player_status,
     get_player_status,
@@ -78,7 +79,7 @@ from utils.bunker_events import (
 
 router = Router()
 
-_ATTR_KEYS = ["profession", "health", "hobby", "phobia", "baggage", "ability"]
+_ATTR_KEYS = ["age", "profession", "health", "hobby", "phobia", "baggage", "ability"]
 
 
 # ─────────────────────── helpers ────────────────────────────────────────────
@@ -93,6 +94,13 @@ async def _push(bot: Bot, tg_id: int, text: str, **kwargs) -> None:
         await bot.send_message(tg_id, text, parse_mode="HTML", **kwargs)
     except (TelegramForbiddenError, TelegramBadRequest) as e:
         logging.warning("bunker push to %s failed: %s", tg_id, e)
+
+
+def _status_bar(alive_count: int, capacity: int, round_num: int = 0) -> str:
+    s = f"🟢 Живих: {alive_count} | 🏠 Місця: {capacity}"
+    if round_num:
+        s += f" | ⚔️ Раунд: {round_num}"
+    return s
 
 
 def _card_text(card: dict, lang: str) -> str:
@@ -117,6 +125,53 @@ def _cards_summary(players: list[dict], lang: str) -> str:
             value = card.get(attr, "—")
             mark = "✅" if attr in revealed else "🔒"
             lines.append(f"  {mark} {attr_name}: {value}")
+    return "\n".join(lines)
+
+
+_ATTR_EMOJI = {
+    "age": "🎂",
+    "profession": "💼", "health": "❤️", "hobby": "🎯",
+    "phobia": "😨", "baggage": "🎒", "ability": "⚡",
+}
+_STATUS_EMOJI_MAP = {
+    "sick": "🤒", "immune": "💊", "breakdown": "😤",
+    "thief": "🎭", "detective": "🔍", "repairing": "🛠️",
+    "blackout": "⚡", "skip_turn": "🚫",
+}
+
+
+def _cards_compact(
+    alive: list[dict],
+    eliminated: list[dict],
+    statuses: dict[int, str],
+    lang: str,
+) -> str:
+    """Compact host cards view — only revealed attrs + status emoji."""
+    lines = []
+    total_attrs = len(_ATTR_KEYS)
+    for p in alive:
+        card = json.loads(p["card_json"] or "{}")
+        revealed = json.loads(p["revealed"] or "[]")
+        st = _STATUS_EMOJI_MAP.get(statuses.get(p["tg_id"], ""), "")
+        st_str = f" {st}" if st else ""
+        rev_count = len(revealed)
+        lines.append(f"👤 <b>{p['display_name']}</b> ({rev_count}/{total_attrs}){st_str}")
+        if revealed:
+            parts = [
+                f"{_ATTR_EMOJI.get(a, '')} {card.get(a, '—')}"
+                for a in _ATTR_KEYS if a in revealed
+            ]
+            lines.append("  " + "  •  ".join(parts))
+        else:
+            lines.append(f"  <i>{t('bunker_cards_nothing_revealed', lang)}</i>")
+        lines.append("")
+    # trim trailing blank line
+    while lines and lines[-1] == "":
+        lines.pop()
+    if eliminated:
+        lines.append("──────────────")
+        elim = "  •  ".join(f"<b>{p['display_name']}</b>" for p in eliminated)
+        lines.append(f"💀 {elim}")
     return "\n".join(lines)
 
 
@@ -335,6 +390,7 @@ async def cb_bunker_start(callback: CallbackQuery, bot: Bot) -> None:
     cards_txt = _cards_summary(players, lang)
 
     await callback.message.edit_text(
+        _status_bar(len(players), session["bunker_capacity"]) + "\n" +
         t("bunker_game_started_host", lang,
           catastrophe=session["catastrophe_text"],
           bunker=session["bunker_text"],
@@ -362,6 +418,39 @@ async def cb_bunker_start(callback: CallbackQuery, bot: Bot) -> None:
         )
 
 
+# ─────────────────────── HOST: view cards ────────────────────────────────────
+
+@router.callback_query(F.data.regexp(r"^bunker:view_cards:\d+$"))
+async def cb_bunker_view_cards(callback: CallbackQuery) -> None:
+    session_id = int(callback.data.split(":")[-1])
+    lang = await _get_lang(callback.from_user.id)
+
+    session = await get_bunker_session(session_id)
+    if not session or session["host_tg_id"] != callback.from_user.id:
+        await callback.answer("⛔", show_alert=True)
+        return
+    if session["status"] != "active":
+        await callback.answer(t("bunker_session_not_active", lang), show_alert=True)
+        return
+
+    all_players = await get_bunker_players(session_id)
+    alive = [p for p in all_players if p["is_alive"]]
+    eliminated = [p for p in all_players if not p["is_alive"]]
+    statuses = await get_all_player_statuses(session_id)
+    cards_txt = _cards_compact(alive, eliminated, statuses, lang)
+
+    await callback.message.edit_text(
+        _status_bar(len(alive), session["bunker_capacity"]) + "\n" +
+        t("bunker_cards_view_host", lang,
+          alive=len(alive),
+          capacity=session["bunker_capacity"],
+          cards=cards_txt),
+        reply_markup=bunker_host_game_keyboard(session_id, lang),
+        parse_mode="HTML",
+    )
+    await callback.answer()
+
+
 # ─────────────────────── HOST: open reveal round ─────────────────────────────
 
 @router.callback_query(F.data.regexp(r"^bunker:round_open:\d+$"))
@@ -387,9 +476,15 @@ async def cb_bunker_round_open(callback: CallbackQuery, bot: Bot) -> None:
 
     await update_bunker_session(session_id, current_attr=f"round:{reveal_round}")
 
+    all_players = await get_bunker_players(session_id)
+    eliminated = [p for p in all_players if not p["is_alive"]]
+    statuses = await get_all_player_statuses(session_id)
+    cards_txt = _cards_compact(alive, eliminated, statuses, lang)
+
     status = _round_status_text(alive, reveal_round, lang)
     await callback.message.edit_text(
-        t("bunker_round_open_host", lang, round_num=reveal_round, status=status),
+        _status_bar(len(alive), session["bunker_capacity"], reveal_round) + "\n" +
+        t("bunker_round_open_host", lang, round_num=reveal_round, status=status, cards=cards_txt),
         reply_markup=bunker_host_game_keyboard(session_id, lang),
         parse_mode="HTML",
     )
@@ -475,7 +570,7 @@ async def cb_bunker_confirm_attr(callback: CallbackQuery, bot: Bot) -> None:
     except Exception:
         pass
 
-    # Notify host: updated round status
+    # Notify host: updated round status + compact cards
     session = await get_bunker_session(session_id)
     if not session:
         return
@@ -485,10 +580,15 @@ async def cb_bunker_confirm_attr(callback: CallbackQuery, bot: Bot) -> None:
     current_attr = session.get("current_attr", "")
     reveal_round = int(current_attr.split(":")[-1]) if current_attr.startswith("round:") else 1
 
+    all_players = await get_bunker_players(session_id)
+    eliminated = [p for p in all_players if not p["is_alive"]]
+    statuses = await get_all_player_statuses(session_id)
+    cards_txt = _cards_compact(alive, eliminated, statuses, host_lang)
+
     status = _round_status_text(alive, reveal_round, host_lang)
     await _push(
         bot, session["host_tg_id"],
-        t("bunker_round_status_host", host_lang, round_num=reveal_round, status=status),
+        t("bunker_round_status_host", host_lang, round_num=reveal_round, status=status, cards=cards_txt),
     )
 
 
@@ -539,6 +639,7 @@ async def cb_bunker_vote_start(callback: CallbackQuery, bot: Bot) -> None:
     pending_names = ", ".join(p["display_name"] for p in alive)
 
     await callback.message.edit_text(
+        _status_bar(len(alive), session["bunker_capacity"]) + "\n" +
         t("bunker_vote_open_host", lang, round=vote_round, pending=pending_names),
         reply_markup=bunker_host_game_keyboard(session_id, lang),
         parse_mode="HTML",
@@ -581,14 +682,17 @@ async def cb_bunker_vote(callback: CallbackQuery, bot: Bot) -> None:
     # Check if all alive players voted
     pending = await get_pending_vote_players(session_id, vote_round)
     if pending:
-        # Notify host: who hasn't voted yet
+        # Notify host: vote progress
         host_lang = await _get_lang(session["host_tg_id"])
         alive = await get_alive_bunker_players(session_id)
+        total_alive = len(alive)
+        voted = total_alive - len(pending)
         pending_names_map = {p["tg_id"]: p["display_name"] for p in alive}
         pending_str = ", ".join(pending_names_map.get(tid, str(tid)) for tid in pending)
         await _push(
             bot, session["host_tg_id"],
-            t("bunker_vote_open_host", host_lang, round=vote_round, pending=pending_str),
+            t("bunker_vote_progress_host", host_lang,
+              round=vote_round, voted=voted, total=total_alive, pending=pending_str),
         )
     else:
         # All voted — show results to host
@@ -651,16 +755,23 @@ async def cb_bunker_kick(callback: CallbackQuery, bot: Bot) -> None:
 
     await eliminate_bunker_player(session_id, target_tg_id)
 
-    # Notify eliminated player
+    # Notify eliminated player personally
     eliminated_lang = await _get_lang(target_tg_id)
     await _push(bot, target_tg_id, t("bunker_eliminated_player", eliminated_lang))
 
-    # Broadcast to all remaining alive players
+    # Broadcast round summary to all players (alive + eliminated)
     alive = await get_alive_bunker_players(session_id)
-    for p in alive:
+    all_for_broadcast = await get_bunker_players(session_id)
+    for p in all_for_broadcast:
         p_lang = await _get_lang(p["tg_id"])
-        await _push(bot, p["tg_id"],
-                    t("bunker_eliminated_broadcast", p_lang, name=name))
+        await _push(
+            bot, p["tg_id"],
+            t("bunker_kick_summary_broadcast", p_lang,
+              vote_round=session["vote_round"],
+              eliminated_name=name,
+              remaining=len(alive),
+              capacity=session["bunker_capacity"]),
+        )
 
     # Check if game should end
     capacity = session["bunker_capacity"]
@@ -670,13 +781,15 @@ async def cb_bunker_kick(callback: CallbackQuery, bot: Bot) -> None:
 
     # Update host view
     players_all = await get_bunker_players(session_id)
-    cards_txt = _cards_summary([p for p in players_all if p["is_alive"]], lang)
+    alive_remaining = [p for p in players_all if p["is_alive"]]
+    cards_txt = _cards_summary(alive_remaining, lang)
     await callback.message.edit_text(
+        _status_bar(len(alive_remaining), capacity) + "\n" +
         t("bunker_game_started_host", lang,
           catastrophe=session["catastrophe_text"],
           bunker=session["bunker_text"],
           capacity=capacity,
-          total=len([p for p in players_all if p["is_alive"]]),
+          total=len(alive_remaining),
           cards_summary=cards_txt),
         reply_markup=bunker_host_game_keyboard(session_id, lang),
         parse_mode="HTML",
@@ -1293,3 +1406,75 @@ async def _apply_event_consequences(
             new_cap = max(1, capacity - 1)
             await update_bunker_session(session_id, bunker_capacity=new_cap)
         # fail: host decides manually (capacity or rations)
+
+
+# ─── Player info handlers ────────────────────────────────────────────────────
+
+@router.callback_query(F.data.regexp(r"^bunker:alive_list:\d+$"))
+async def cb_bunker_alive_list(callback: CallbackQuery) -> None:
+    session_id = int(callback.data.split(":")[-1])
+    lang = await _get_lang(callback.from_user.id)
+    session = await get_bunker_session(session_id)
+    if not session or session["status"] != "active":
+        await callback.answer(t("bunker_session_not_active", lang), show_alert=True)
+        return
+    alive = await get_alive_bunker_players(session_id)
+    names = "\n".join(f"🟢 {p['display_name']}" for p in alive)
+    await callback.answer(
+        t("bunker_alive_list_popup", lang, count=len(alive), names=names),
+        show_alert=True,
+    )
+
+
+@router.callback_query(F.data.regexp(r"^bunker:my_card:\d+$"))
+async def cb_bunker_my_card(callback: CallbackQuery) -> None:
+    session_id = int(callback.data.split(":")[-1])
+    lang = await _get_lang(callback.from_user.id)
+    session = await get_bunker_session(session_id)
+    if not session or session["status"] != "active":
+        await callback.answer(t("bunker_session_not_active", lang), show_alert=True)
+        return
+    player = await get_bunker_player(session_id, callback.from_user.id)
+    if not player:
+        await callback.answer(t("bunker_not_in_session", lang), show_alert=True)
+        return
+    card = json.loads(player["card_json"] or "{}")
+    revealed = json.loads(player["revealed"] or "[]")
+    lines = []
+    for attr in _ATTR_KEYS:
+        attr_name = t(f"bunker_attr_{attr}", lang)
+        value = card.get(attr, "—")
+        mark = "✅" if attr in revealed else "🔒"
+        lines.append(f"  {mark} {attr_name}: <b>{value}</b>")
+    await callback.message.answer(
+        t("bunker_my_card_header", lang) + "\n\n" + "\n".join(lines),
+        parse_mode="HTML",
+        reply_markup=bunker_player_card_keyboard(session_id, card, revealed, lang),
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data.regexp(r"^bunker:history:\d+$"))
+async def cb_bunker_history(callback: CallbackQuery) -> None:
+    session_id = int(callback.data.split(":")[-1])
+    lang = await _get_lang(callback.from_user.id)
+    session = await get_bunker_session(session_id)
+    if not session or session["host_tg_id"] != callback.from_user.id:
+        await callback.answer("⛔", show_alert=True)
+        return
+    events = await get_bunker_event_history(session_id, limit=5)
+    if not events:
+        await callback.answer(t("bunker_history_empty", lang), show_alert=True)
+        return
+    all_players = await get_bunker_players(session_id)
+    name_map = {p["tg_id"]: p["display_name"] for p in all_players}
+    lines = []
+    for ev in events:
+        ename = event_name(ev["event_code"], lang)
+        oem = _outcome_emoji(ev["outcome"])
+        exec_name = name_map.get(ev["executor_tg_id"], "—") if ev["executor_tg_id"] else "—"
+        lines.append(f"{oem} {ename} — {exec_name}")
+    await callback.answer(
+        t("bunker_history_popup", lang, events="\n".join(lines)),
+        show_alert=True,
+    )

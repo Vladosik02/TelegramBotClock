@@ -488,11 +488,15 @@ STRINGS: dict[str, str] = {
     "bunker_round_open_host": (
         "📋 <b>Раунд розкриття #{round_num}</b>\n\n"
         "Гравці обирають, що розкрити. Очікуй поки всі оголосять!\n\n"
-        "{status}"
+        "{status}\n\n"
+        "━━━━━━━━━━━━━━━━━━━━\n"
+        "🃏 <b>Картки:</b>\n{cards}"
     ),
     "bunker_round_status_host": (
-        "📋 <b>Раунд розкриття #{round_num} — оновлення</b>\n\n"
-        "{status}"
+        "📋 <b>Раунд #{round_num} — оновлення</b>\n\n"
+        "{status}\n\n"
+        "━━━━━━━━━━━━━━━━━━━━\n"
+        "🃏 <b>Картки:</b>\n{cards}"
     ),
     "bunker_pick_attr_prompt": (
         "🃏 <b>Раунд #{round_num} — обери атрибут</b>\n\n"
@@ -566,6 +570,7 @@ STRINGS: dict[str, str] = {
     "bunker_attr_phobia":     "😨 Фобія",
     "bunker_attr_baggage":    "🎒 Багаж",
     "bunker_attr_ability":    "⚡ Здібність",
+    "bunker_attr_age":        "🎂 Вік",
 
     # Rules button
     "bunker_btn_rules": "📖 Правила гри",
@@ -629,6 +634,15 @@ STRINGS: dict[str, str] = {
     ),
 
     # ── Phase 5: Event Cards (Section 15) ────────────────────────────────────
+    "bunker_btn_view_cards":       "🃏 Картки гравців",
+    "bunker_cards_view_host": (
+        "🃏 <b>Картки гравців</b>\n"
+        "👥 Живих: <b>{alive}</b>  /  🏠 Місць: <b>{capacity}</b>\n\n"
+        "━━━━━━━━━━━━━━━━━━━━\n"
+        "{cards}"
+    ),
+    "bunker_cards_nothing_revealed": "нічого не розкрито",
+
     "bunker_btn_draw_event":      "🎲 Витягнути подію",
     "bunker_btn_roll_dice":       "🎲 Кинути кубик",
 
@@ -708,4 +722,23 @@ STRINGS: dict[str, str] = {
     ),
     "bunker_status_infected":     "🤒 Ти заразився! Статус: 🤒 Хворий.",
     "bunker_game_auto_end_hint":  "🏁 <b>Підказка:</b> Живих гравців = місць у бункері. Можна завершувати гру кнопкою «🏁 Завершити гру».",
+
+    # --- UI improvements ---
+    "bunker_btn_history":    "📜 Історія",
+    "bunker_btn_alive_list": "👥 Хто живий",
+    "bunker_btn_my_card":    "🃏 Моя карта",
+    "bunker_vote_progress_host": (
+        "🗳 <b>ГОЛОСУВАННЯ #{round}</b>\n\n"
+        "Проголосували: {voted}/{total}\n"
+        "Ще не голосували: {pending}"
+    ),
+    "bunker_kick_summary_broadcast": (
+        "⚔️ <b>Раунд {vote_round} завершено</b>\n\n"
+        "💀 Вибув: <b>{eliminated_name}</b>\n"
+        "🟢 Живих: {remaining} | 🏠 Місця: {capacity}"
+    ),
+    "bunker_alive_list_popup": "🟢 Живих: {count}\n\n{names}",
+    "bunker_my_card_header":   "🃏 <b>Твоя карта:</b>",
+    "bunker_history_empty":    "📜 Подій ще не було.",
+    "bunker_history_popup":    "📜 <b>Останні події:</b>\n\n{events}",
 }

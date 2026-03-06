@@ -1,0 +1,15 @@
+[Unit]
+Description=Clock Anticafe Telegram Bot
+After=network.target
+
+[Service]
+Type=simple
+User=USERNAME
+WorkingDirectory=/home/USERNAME/ProjectClock
+ExecStart=/home/USERNAME/ProjectClock/.venv/bin/python bot.py
+Restart=on-failure
+RestartSec=5
+EnvironmentFile=/home/USERNAME/ProjectClock/.env
+
+[Install]
+WantedBy=multi-user.target

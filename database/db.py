@@ -1023,7 +1023,7 @@ import json as _json
 import random as _random
 import string as _string
 
-_BUNKER_ATTR_TYPES = ["profession", "health", "hobby", "phobia", "baggage", "ability"]
+_BUNKER_ATTR_TYPES = ["age", "profession", "health", "hobby", "phobia", "baggage", "ability"]
 
 
 def _gen_session_code() -> str:
@@ -1153,13 +1153,8 @@ async def start_bunker_game(session_id: int) -> dict:
     session = await get_bunker_session(session_id)
     n_players = session["max_players"]
 
-    # Capacity from bunker scenario, capped sensibly
-    capacity = 3
-    if bun_row:
-        cap_min = bun_row["capacity_min"]
-        cap_max = min(bun_row["capacity_max"], n_players - 1)
-        capacity = max(2, _random.randint(cap_min, max(cap_min, cap_max)))
-        capacity = min(capacity, n_players - 1)
+    # Capacity: fixed formula — 4p→1, 6p→2, 8p→3, 12p→4
+    capacity = max(1, round(n_players / 3))
 
     cat_text = cat_row["text_uk"] if cat_row else "Невідома катастрофа"
     bun_text = bun_row["text_uk"] if bun_row else "Підземний бункер"
@@ -1337,6 +1332,19 @@ async def get_recent_event_codes(session_id: int, limit: int = 2) -> list[str]:
         (session_id, limit),
     )).fetchall()
     return [r[0] for r in rows]
+
+
+async def get_bunker_event_history(session_id: int, limit: int = 5) -> list[dict]:
+    """Return last N resolved events for a session, newest first."""
+    db = await get_db()
+    rows = await (await db.execute(
+        """SELECT event_code, outcome, executor_tg_id
+           FROM bunker_active_events
+           WHERE session_id=? AND is_resolved=1
+           ORDER BY id DESC LIMIT ?""",
+        (session_id, limit),
+    )).fetchall()
+    return [dict(r) for r in rows]
 
 
 # ─── Player statuses ──────────────────────────────────────────────────────────

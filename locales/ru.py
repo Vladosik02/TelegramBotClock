@@ -488,11 +488,15 @@ STRINGS: dict[str, str] = {
     "bunker_round_open_host": (
         "📋 <b>Раунд раскрытия #{round_num}</b>\n\n"
         "Игроки выбирают, что раскрыть. Жди пока все объявят!\n\n"
-        "{status}"
+        "{status}\n\n"
+        "━━━━━━━━━━━━━━━━━━━━\n"
+        "🃏 <b>Карточки:</b>\n{cards}"
     ),
     "bunker_round_status_host": (
-        "📋 <b>Раунд раскрытия #{round_num} — обновление</b>\n\n"
-        "{status}"
+        "📋 <b>Раунд #{round_num} — обновление</b>\n\n"
+        "{status}\n\n"
+        "━━━━━━━━━━━━━━━━━━━━\n"
+        "🃏 <b>Карточки:</b>\n{cards}"
     ),
     "bunker_pick_attr_prompt": (
         "🃏 <b>Раунд #{round_num} — выбери атрибут</b>\n\n"
@@ -566,6 +570,7 @@ STRINGS: dict[str, str] = {
     "bunker_attr_phobia":     "😨 Фобия",
     "bunker_attr_baggage":    "🎒 Багаж",
     "bunker_attr_ability":    "⚡ Способность",
+    "bunker_attr_age":        "🎂 Возраст",
 
     # Rules button
     "bunker_btn_rules": "📖 Правила игры",
@@ -630,6 +635,15 @@ STRINGS: dict[str, str] = {
     ),
 
     # ── Phase 5: Event Cards (Section 15) ────────────────────────────────────
+    "bunker_btn_view_cards":       "🃏 Карточки игроков",
+    "bunker_cards_view_host": (
+        "🃏 <b>Карточки игроков</b>\n"
+        "👥 Живых: <b>{alive}</b>  /  🏠 Мест: <b>{capacity}</b>\n\n"
+        "━━━━━━━━━━━━━━━━━━━━\n"
+        "{cards}"
+    ),
+    "bunker_cards_nothing_revealed": "ничего не раскрыто",
+
     "bunker_btn_draw_event":      "🎲 Вытащить событие",
     "bunker_btn_roll_dice":       "🎲 Бросить кубик",
 
@@ -709,4 +723,23 @@ STRINGS: dict[str, str] = {
     ),
     "bunker_status_infected":     "🤒 Ты заразился! Статус: 🤒 Больной.",
     "bunker_game_auto_end_hint":  "🏁 <b>Подсказка:</b> Живых игроков = мест в бункере. Можно завершать игру кнопкой «🏁 Завершить игру».",
+
+    # --- UI improvements ---
+    "bunker_btn_history":    "📜 История",
+    "bunker_btn_alive_list": "👥 Кто жив",
+    "bunker_btn_my_card":    "🃏 Моя карта",
+    "bunker_vote_progress_host": (
+        "🗳 <b>ГОЛОСОВАНИЕ #{round}</b>\n\n"
+        "Проголосовали: {voted}/{total}\n"
+        "Ещё не голосовали: {pending}"
+    ),
+    "bunker_kick_summary_broadcast": (
+        "⚔️ <b>Раунд {vote_round} завершён</b>\n\n"
+        "💀 Выбыл: <b>{eliminated_name}</b>\n"
+        "🟢 Живых: {remaining} | 🏠 Мест: {capacity}"
+    ),
+    "bunker_alive_list_popup": "🟢 Живых: {count}\n\n{names}",
+    "bunker_my_card_header":   "🃏 <b>Твоя карточка:</b>",
+    "bunker_history_empty":    "📜 Событий ещё не было.",
+    "bunker_history_popup":    "📜 <b>Последние события:</b>\n\n{events}",
 }
